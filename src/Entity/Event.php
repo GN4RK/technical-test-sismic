@@ -35,6 +35,7 @@ class Event
     private ?int $places = null;
 
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: Registration::class, orphanRemoval: true)]
+    #[Groups(["getRegistrations"])]
     private Collection $registrations;
 
     public function __construct()
