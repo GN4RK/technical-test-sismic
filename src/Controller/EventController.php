@@ -16,7 +16,7 @@ class EventController extends AbstractController
     public function getEventList(EventRepository $eventRepository, SerializerInterface $serializer): JsonResponse
     {
         $eventList = $eventRepository->findAll();
-        $jsonEventList = $serializer->serialize($eventList, 'json');
+        $jsonEventList = $serializer->serialize($eventList, 'json', ['groups' => 'getEvents']);
 
         return new JsonResponse($jsonEventList, Response::HTTP_OK, [], true);
     }
@@ -24,7 +24,7 @@ class EventController extends AbstractController
     #[Route('/api/events/{id}', name: 'event_details', methods: ['GET'])]
     public function getEvent(Event $event, SerializerInterface $serializer): JsonResponse
     {
-        $jsonEvent = $serializer->serialize($event, 'json');
+        $jsonEvent = $serializer->serialize($event, 'json', ['groups' => 'getEvents']);
         return new JsonResponse($jsonEvent, Response::HTTP_OK, ['accept' => 'json'], true);
     }
 
