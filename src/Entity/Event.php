@@ -125,4 +125,9 @@ class Event
 
         return $this;
     }
+
+    public function isFull(): bool
+    {
+        return $this->getPlaces() - count($this->getRegistrations()) <= 0;
+    }
 }
