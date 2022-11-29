@@ -5,6 +5,38 @@ namespace App\Entity;
 use App\Repository\RegistrationRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use Hateoas\Configuration\Annotation as Hateoas;
+
+/**
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "registration_details",
+ *          parameters = { "idEvent" = "expr(object.getEvent().getId())", "idRegistration" = "expr(object.getId())",  }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getRegistrations")
+ * )
+ * 
+ * @Hateoas\Relation(
+ *      "update",
+ *      href = @Hateoas\Route(
+ *          "update_registration",
+ *          parameters = { "idEvent" = "expr(object.getEvent().getId())", "idRegistration" = "expr(object.getId())",  }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getRegistrations")
+ * )
+ * 
+ * @Hateoas\Relation(
+ *      "delete",
+ *      href = @Hateoas\Route(
+ *          "delete_registration",
+ *          parameters = { "idEvent" = "expr(object.getEvent().getId())", "idRegistration" = "expr(object.getId())",  }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getRegistrations")
+ * )
+ *
+ * 
+ */
 
 #[ORM\Entity(repositoryClass: RegistrationRepository::class)]
 class Registration
