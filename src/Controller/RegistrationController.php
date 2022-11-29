@@ -7,6 +7,8 @@ use App\Entity\Registration;
 use App\Repository\EventRepository;
 use App\Repository\RegistrationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,14 +16,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\SerializerInterface;
 
 class RegistrationController extends AbstractController
 {
     #[Route('/api/events/{id}/registrations', name: 'registration_list', methods: ['GET'])]
     public function getRegistrationList(Event $event, SerializerInterface $serializer): JsonResponse
     {
-        $jsonRegistration = $serializer->serialize($event, 'json', ['groups' => 'getRegistrations']);
+        $context = SerializationContext::create()->setGroups(['getRegistrations']);
+        $jsonRegistration = $serializer->serialize($event, 'json', $context);
         return new JsonResponse($jsonRegistration, Response::HTTP_OK, ['accept' => 'json'], true);
     }
 
@@ -43,7 +45,8 @@ class RegistrationController extends AbstractController
         }
 
         if ($registration) {
-            $jsonRegistration = $serializer->serialize($registration, 'json', ['groups' => 'getRegistrations']);
+            $context = SerializationContext::create()->setGroups(['getRegistrations']);
+            $jsonRegistration = $serializer->serialize($registration, 'json', $context);
             return new JsonResponse($jsonRegistration, Response::HTTP_OK, [], true);
         }
         return new JsonResponse(null, Response::HTTP_NOT_FOUND);
@@ -57,7 +60,7 @@ class RegistrationController extends AbstractController
     {
         if ($event->isFull()) {
             return new JsonResponse([
-                "status" => "405",
+                "status" => "500",
                 "message" => "Event is full"
             ], Response::HTTP_METHOD_NOT_ALLOWED);
         }
@@ -69,7 +72,8 @@ class RegistrationController extends AbstractController
         $em->persist($registration);
         $em->flush();
 
-        $jsonRegistration = $serializer->serialize($registration, 'json', ['groups' => 'getRegistrations']);
+        $context = SerializationContext::create()->setGroups(['getRegistrations']);
+        $jsonRegistration = $serializer->serialize($registration, 'json', $context);
         $location = $urlGenerator->generate(
             'registration_details',[
                 'idEvent' => $event->getId(),
@@ -102,14 +106,13 @@ class RegistrationController extends AbstractController
             return new JsonResponse(null, Response::HTTP_NOT_FOUND);
         }
 
-        $updatedRegistration = $serializer->deserialize(
-            $request->getContent(), 
-            Registration::class, 
-            'json',
-            [AbstractNormalizer::OBJECT_TO_POPULATE => $registration]
-        );
+        $newRegistration = $serializer->deserialize($request->getContent(), Registration::class, 'json');
+        $registration->setName($newRegistration->getName());
+        $registration->setFirstName($newRegistration->getFirstName());
+        $registration->setEmail($newRegistration->getEmail());
+        $registration->setPhone($newRegistration->getPhone());
 
-        $em->persist($updatedRegistration);
+        $em->persist($registration);
         $em->flush();
 
         return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
