@@ -56,8 +56,10 @@ class RegistrationController extends AbstractController
         ): JsonResponse
     {
         if ($event->isFull()) {
-            // TODO better error message
-            return new JsonResponse("event is full", Response::HTTP_METHOD_NOT_ALLOWED);
+            return new JsonResponse([
+                "status" => "405",
+                "message" => "Event is full"
+            ], Response::HTTP_METHOD_NOT_ALLOWED);
         }
         
         $registration = new Registration();
