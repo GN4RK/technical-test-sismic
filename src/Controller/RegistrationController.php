@@ -27,8 +27,8 @@ class RegistrationController extends AbstractController
 
     #[Route('/api/events/{idEvent}/registrations/{idRegistration}', name: 'registration_details', methods: ['GET'])]
     public function getRegistrationDetails(
-        int $idEvent, int $idRegistration, RegistrationRepository $registrationRepository, EventRepository $eventRepository, SerializerInterface $serializer
-    ): JsonResponse
+        int $idEvent, int $idRegistration, RegistrationRepository $registrationRepository, 
+        EventRepository $eventRepository, SerializerInterface $serializer): JsonResponse
     {
         $registration = $registrationRepository->find($idRegistration);
         $event = $eventRepository->find($idEvent);

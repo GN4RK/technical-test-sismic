@@ -38,25 +38,38 @@ Registrations
 
 ## Installation
 
-### Cloning the project
+### Cloner le projet
 ```
 git clone https://github.com/GN4RK/technical-test-sismic
 ```
 
-### Installing dependencies 
+### Installer les dépendances
 ```
 composer install
 ```
 
 ### Configurations
 
-#### Database
-Change database connection in .env file : 
+#### Base de données
+Changer la connexion à la base de donnée dans le fichier .env : 
 ```
 DATABASE_URL="postgresql://app:!ChangeMe!@127.0.0.1:5432/app?serverVersion=14&charset=utf8"
 ```
 
-### Running server
+#### Création de la base de données
+```
+php bin/console doctrine:database:create
+```
+
+#### Mettre à jour le schema de la base
+```
+php bin/console doctrine:schema:update --force
+```
+
+### Lancer le serveur
 ```
 symfony server:start
 ```
+
+## Badge Codacy
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/56f6031a38ac428ebfe81699c49c6a03)](https://www.codacy.com/gh/GN4RK/technical-test-sismic/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=GN4RK/technical-test-sismic&amp;utm_campaign=Badge_Grade)

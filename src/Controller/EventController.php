@@ -17,7 +17,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 class EventController extends AbstractController
 {
     #[Route('/api/events', name: 'event_list', methods: ['GET'])]
-    public function getEventList(EventRepository $eventRepository, SerializerInterface $serializer): JsonResponse
+    public function getEventList(
+        EventRepository $eventRepository, SerializerInterface $serializer
+        ): JsonResponse
     {
         $eventList = $eventRepository->findAll();
         $jsonEventList = $serializer->serialize($eventList, 'json', ['groups' => 'getEvents']);
@@ -61,8 +63,8 @@ class EventController extends AbstractController
     
     #[Route('/api/events/{id}', name: 'update_event', methods: ['PUT'])]
     public function updateEvent(
-        Request $request, SerializerInterface $serializer, Event $currentEvent, 
-        EntityManagerInterface $em, UrlGeneratorInterface $urlGenerator
+        Request $request, SerializerInterface $serializer, 
+        Event $currentEvent, EntityManagerInterface $em,
         ): JsonResponse
     {
         $updatedEvent = $serializer->deserialize(
