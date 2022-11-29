@@ -5,22 +5,25 @@ namespace App\Controller;
 use App\Entity\Event;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\SerializerInterface;
 
 class EventController extends AbstractController
 {
     #[Route('/api/events', name: 'event_list', methods: ['GET'])]
-    public function getEventList(EventRepository $eventRepository, SerializerInterface $serializer): JsonResponse
+    public function getEventList(
+        EventRepository $eventRepository, SerializerInterface $serializer
+        ): JsonResponse
     {
         $eventList = $eventRepository->findAll();
-        $jsonEventList = $serializer->serialize($eventList, 'json', ['groups' => 'getEvents']);
+        $context = SerializationContext::create()->setGroups(['getEvents']);
+        $jsonEventList = $serializer->serialize($eventList, 'json', $context);
 
         return new JsonResponse($jsonEventList, Response::HTTP_OK, [], true);
     }
@@ -28,7 +31,8 @@ class EventController extends AbstractController
     #[Route('/api/events/{id}', name: 'event_details', methods: ['GET'])]
     public function getEvent(Event $event, SerializerInterface $serializer): JsonResponse
     {
-        $jsonEvent = $serializer->serialize($event, 'json', ['groups' => 'getEvents']);
+        $context = SerializationContext::create()->setGroups(['getEvents']);
+        $jsonEvent = $serializer->serialize($event, 'json', $context);
         return new JsonResponse($jsonEvent, Response::HTTP_OK, ['accept' => 'json'], true);
     }
     
@@ -51,7 +55,8 @@ class EventController extends AbstractController
         $em->persist($event);
         $em->flush();
 
-        $jsonEvent = $serializer->serialize($event, 'json', ['groups' => 'getEvents']);
+        $context = SerializationContext::create()->setGroups(['getEvents']);
+        $jsonEvent = $serializer->serialize($event, 'json', $context);
         $location = $urlGenerator->generate(
             'event_details', ['id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL
         );
@@ -61,18 +66,17 @@ class EventController extends AbstractController
     
     #[Route('/api/events/{id}', name: 'update_event', methods: ['PUT'])]
     public function updateEvent(
-        Request $request, SerializerInterface $serializer, Event $currentEvent, 
-        EntityManagerInterface $em, UrlGeneratorInterface $urlGenerator
+        Request $request, SerializerInterface $serializer, 
+        Event $currentEvent, EntityManagerInterface $em,
         ): JsonResponse
     {
-        $updatedEvent = $serializer->deserialize(
-            $request->getContent(), 
-            Event::class, 
-            'json',
-            [AbstractNormalizer::OBJECT_TO_POPULATE => $currentEvent]
-        );
+        $newEvent = $serializer->deserialize($request->getContent(), Event::class, 'json');
+        $currentEvent->setName($newEvent->getName());
+        $currentEvent->setStart($newEvent->getStart());
+        $currentEvent->setEnding($newEvent->getEnding());
+        $currentEvent->setPlaces($newEvent->getPlaces());
 
-        $em->persist($updatedEvent);
+        $em->persist($currentEvent);
         $em->flush();
 
         return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
