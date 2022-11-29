@@ -20,6 +20,7 @@ Le projet à été développé avec Symfony 6.1, Postgresql et Doctrine.
 ## Endpoints
 Events :
 | Verb | Endpoint | Description |
+| --- | --- | --- |
 | POST | /events | create a new event |
 | GET | /events | read event list |
 | GET | /events/{id} | read event details |
@@ -28,6 +29,7 @@ Events :
 
 Registrations
 | Verb | Endpoint | Description |
+| --- | --- | --- |
 | POST | /events/{idEvent}/registrations | create a new registration for a specific event |
 | GET | /events/{idEvent}/registrations | read registration list for a specific event |
 | GET | /events/{idEvent}/registrations/{idRegistration} | read registration details |
