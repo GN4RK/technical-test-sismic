@@ -1,8 +1,8 @@
 nelmio_api_doc:
     documentation:
         info:
-            title: My App
-            description: This is an awesome app!
+            title: Technical Test SISMIC
+            description: This an app for a technical test for SISMIC
             version: 1.0.0
     areas: # to filter documented areas
         path_patterns:
