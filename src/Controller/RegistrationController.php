@@ -15,10 +15,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use OpenApi\Annotations as OA;
 
 class RegistrationController extends AbstractController
 {
+    /**
+     * Read registrations list for an event
+     * @OA\Tag(name="Registrations")
+     */
     #[Route('/api/events/{id}/registrations', name: 'registration_list', methods: ['GET'])]
     public function getRegistrationList(Event $event, SerializerInterface $serializer): JsonResponse
     {
@@ -27,6 +31,10 @@ class RegistrationController extends AbstractController
         return new JsonResponse($jsonRegistration, Response::HTTP_OK, ['accept' => 'json'], true);
     }
 
+    /**
+     * Read Registration details
+     * @OA\Tag(name="Registrations")
+     */
     #[Route('/api/events/{idEvent}/registrations/{idRegistration}', name: 'registration_details', methods: ['GET'])]
     public function getRegistrationDetails(
         int $idEvent, int $idRegistration, RegistrationRepository $registrationRepository, 
@@ -52,6 +60,21 @@ class RegistrationController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NOT_FOUND);
     }
 
+    /**
+     * Create a new registration
+     * @OA\RequestBody(
+     *      required=true,
+     *      @OA\JsonContent(
+     *           example={
+     *               "name":       "NAME",
+     *               "first_name": "First_name",
+     *               "email":      "email@mail.com",
+     *               "phone":      "00 00 00 00 00"
+     *           }
+     *      )
+     * )
+     * @OA\Tag(name="Registrations")
+     */
     #[Route('/api/events/{id}/registrations', name: 'create_registration', methods: ['POST'])]
     public function createRegistration(
         Event $event, Request $request, SerializerInterface $serializer, 
@@ -85,6 +108,21 @@ class RegistrationController extends AbstractController
         return new JsonResponse($jsonRegistration, Response::HTTP_CREATED, ['location' => $location], true);
     }
 
+    /**
+     * Update a registration
+     * @OA\RequestBody(
+     *      required=true,
+     *      @OA\JsonContent(
+     *           example={
+     *               "name":       "NAMEUP",
+     *               "first_name": "First_name_Update",
+     *               "email":      "up@mail.com",
+     *               "phone":      "00 80 00 00 00"
+     *           }
+     *      )
+     * )
+     * @OA\Tag(name="Registrations")
+     */
     #[Route('/api/events/{idEvent}/registrations/{idRegistration}', name: 'update_registration', methods: ['PUT'])]
     public function updateRegistration(
         int $idEvent, int $idRegistration, Request $request, SerializerInterface $serializer, 
@@ -118,6 +156,10 @@ class RegistrationController extends AbstractController
         return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
     }
 
+    /**
+     * Delete a registration
+     * @OA\Tag(name="Registrations")
+     */
     #[Route('/api/events/{idEvent}/registrations/{idRegistration}', name: 'delete_registration', methods: ['DELETE'])]
     public function deleteRegistration(
         int $idEvent, int $idRegistration, EntityManagerInterface $em,
