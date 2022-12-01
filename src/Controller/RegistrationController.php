@@ -85,7 +85,7 @@ class RegistrationController extends AbstractController
             return new JsonResponse([
                 "status" => "500",
                 "message" => "Event is full"
-            ], Response::HTTP_METHOD_NOT_ALLOWED);
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         
         $registration = new Registration();
