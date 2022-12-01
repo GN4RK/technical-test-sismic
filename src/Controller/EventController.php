@@ -13,9 +13,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use OpenApi\Annotations as OA;
 
 class EventController extends AbstractController
 {
+    /**
+     * Read event list
+     * @OA\Tag(name="Events")
+     */
     #[Route('/api/events', name: 'event_list', methods: ['GET'])]
     public function getEventList(
         EventRepository $eventRepository, SerializerInterface $serializer
@@ -28,6 +33,10 @@ class EventController extends AbstractController
         return new JsonResponse($jsonEventList, Response::HTTP_OK, [], true);
     }
     
+    /**
+     * Read an event details
+     * @OA\Tag(name="Events")
+     */
     #[Route('/api/events/{id}', name: 'event_details', methods: ['GET'])]
     public function getEvent(Event $event, SerializerInterface $serializer): JsonResponse
     {
@@ -36,6 +45,10 @@ class EventController extends AbstractController
         return new JsonResponse($jsonEvent, Response::HTTP_OK, ['accept' => 'json'], true);
     }
     
+    /**
+     * Delete an event
+     * @OA\Tag(name="Events")
+     */
     #[Route('/api/events/{id}', name: 'delete_event', methods: ['DELETE'])]
     public function deleteEvent(Event $event, EntityManagerInterface $em): JsonResponse
     {
@@ -44,7 +57,21 @@ class EventController extends AbstractController
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
-    
+    /**
+     * Create a new event
+     * @OA\RequestBody(
+     *      required=true,
+     *      @OA\JsonContent(
+     *           example={
+     *               "name":       "show",
+     *               "start":      "2000-01-01T00:00:00+00:00",
+     *               "ending":     "2000-01-01T00:00:00+00:00",
+     *               "places":     15
+     *           },
+     *      )
+     * )
+     * @OA\Tag(name="Events")
+     */
     #[Route('/api/events', name: 'create_event', methods: ['POST'])]
     public function createEvent(
         Request $request, SerializerInterface $serializer, EntityManagerInterface $em, 
@@ -64,6 +91,21 @@ class EventController extends AbstractController
         return new JsonResponse($jsonEvent, Response::HTTP_CREATED, ['location' => $location], true);
     }
     
+    /**
+     * Update an event
+     * @OA\RequestBody(
+     *      required=true,
+     *      @OA\JsonContent(
+     *           example={
+     *               "name":       "showUpDate",
+     *               "start":      "2000-01-01T00:00:00+00:00",
+     *               "ending":     "2000-01-01T00:00:00+00:00",
+     *               "places":     15
+     *           },
+     *      )
+     * )
+     * @OA\Tag(name="Events")
+     */
     #[Route('/api/events/{id}', name: 'update_event', methods: ['PUT'])]
     public function updateEvent(
         Request $request, SerializerInterface $serializer, 
